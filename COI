@@ -19,7 +19,7 @@ get.oturep(fasta=current, list=current, count=current, method=abundance, process
 classify.seqs(fasta=current, template=ref.fasta, taxonomy=ref.txt)
 count.seqs(count=current, compress=f)
 make.shared(count=current)
-rarefaction.single(shared=current, calc=sobs-chao-shannon, iters=200)
+rarefaction.single(shared=current, calc=sobs-chao-shannon, iters=1000)
 get.lineage(fasta=stabilityallF.trim.contigs.good.good.unique.denovo.vsearch.good.pick.agc.0.05.rep.fasta, count=stabilityallF.trim.contigs.good.good.unique.denovo.vsearch.good.pick.agc.0.05.rep.full.count_table, taxonomy=stabilityallF.trim.contigs.good.good.unique.denovo.vsearch.good.pick.agc.0.05.rep.ref.wang.taxonomy, processors=30, taxon=Animalia_EXT;)
 sub.sample(fasta=current, count=current, taxonomy=current)
 count.seqs(count=current, compress=f)
