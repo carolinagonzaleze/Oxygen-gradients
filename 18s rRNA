@@ -1,0 +1,50 @@
+#!/bin/bash
+##make the contigs based in the Forward and reverse files for each sample. Trim to the overlapping region (since it is about 130 bp is covered totally for both F & R), only keep inserts if Q>30, and if there is a disagreement between F&R, keep as ambiguous unless the difference between both Q > 10
+make.contigs(file=stability.files, deltaq=10, insert=30, trimoverlap=T, processors=35)
+summary.seqs(fasta=current, count=current)
+##remove all contigs with any ambiguity, and those with more than 10 homopolymers
+screen.seqs(fasta=current, count=current, maxambig=0, maxhomop=10, contigsreport=current)
+summary.seqs(fasta=current, count=current)
+##remove all seqs with lenght < 115
+screen.seqs(fasta=current, count=current, minlength=115)
+summary.seqs(fasta=current, count=current)
+##Align using as template SILVA 128 (V9 region only)
+align.seqs(candidate=current, template=Silva128_ShortAll.fas)
+summary.seqs(fasta=current, count=current)
+##remove tails that were kept (likely leftover primers)
+pcr.seqs(fasta=current, count=current,	start=1,  end=692, keepdots=false)
+##remove all contigs that do not reach the end of the fragment
+screen.seqs(fasta=current,	count=current,	start=1, end=691)
+summary.seqs(fasta=current, count=current)
+##remove all contigs that do not start at the beginning of the fragment
+screen.seqs(fasta=current, count=current, start=1)
+summary.seqs(fasta=current, count=current)
+##remove all seqs with lenght < 115 (if created during removal of tails)
+screen.seqs(fasta=current, count=current, minlength=115)
+summary.seqs(fasta=current, count=current)
+##create uniques
+unique.seqs(fasta=current, count=current)
+summary.seqs(fasta=current, count=current)
+get.current()
+##removal of chimeras
+chimera.vsearch(fasta=current, count=current, dereplicate=f)
+summary.seqs(fasta=current, count=current)
+##removal of PCR errors using UNOISE
+#cluster(fasta=current, cutoff=0.01, method=agc, count=current, processors=2)
+#pre.cluster(fasta=current, count=current, diffs=1, method=unoise)
+#degap.seqs(fasta=current)
+##Classify against Silva 128 (nr version, not the available from mothur)
+#classify.seqs(fasta=current, template=Silva128_ShortAll.ng.fasta, taxonomy=taxmap_slv_ssu_ref_128_ShortAll.txt, group=current)
+#count.seqs(count=current, compress=t)
+#make.shared(count=current)
+#rarefaction.single(shared=current, calc=sobs-chao-shannon, iters=100)
+classify.seqs(fasta=current, template=Silva128_ShortAll.ng.fasta, taxonomy=taxmap_slv_ssu_ref_128_ShortAll.txt)
+summary.seqs(fasta=current, count=current)
+get.lineage(taxonomy=current, taxon=Metazoa_(Animalia);, fasta=current, count=current)
+cluster(fasta=current, cutoff=0.01, method=agc, count=current, processors=30)
+get.oturep(fasta=current, list=current, count=current, method=abundance, processors=30)
+classify.seqs(fasta=current, template=Silva128_ShortAll.ng.fasta, taxonomy=taxmap_slv_ssu_ref_128_ShortAll.txt)
+count.seqs(count=current, compress=f)
+make.shared(count=current)
+rarefaction.single(shared=current, calc=sobs-chao-shannon, iters=100)
+quit()
